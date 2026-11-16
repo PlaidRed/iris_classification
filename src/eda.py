@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 from sklearn.datasets import load_iris
 
@@ -101,16 +102,51 @@ def main():
 
 
     print("\nDistribution of each measurement.")
-    plot_distributions(df)
+    # plot_distributions(df)
 
     print("Comparison between species:")
-    plot_species_comparison(df)
+    # plot_species_comparison(df)
 
     print("Feature correlations:")
-    plot_correlation(df)
+    #plot_correlation(df)
 
     print("Comparison of every numerical feature against every other numerical feature:")
-    plot_pairplot(df)
+    #plot_pairplot(df)
 
+    # Generate a histogram for petal length, separating the three species using hue.
+    sns.histplot(data=df, x="petal length (cm)", hue="species",
+                 kde=True, alpha=0.5
+                 )
+    plt.show()
+
+    # Create a boxplot comparing sepal width between species.
+    sns.boxplot(data=df, x="species", y="sepal width (cm)")
+    plt.title("Sepal width by species")
+    plt.show()
+
+    # The two most strongly correlated numerical features.
+    # calculate the correlation Matrix
+    correlation = df.select_dtypes(
+            include="number"
+            ).corr()
+
+    # Keep only the upper triangle, excluding the diagonal
+    upper_triangle = correlation.where(
+            np.triu(np.ones(correlation.shape), k=1).astype(bool)
+            )
+
+    # Convert the matrix into feature pairs
+    correlation_pairs = upper_triangle.stack()
+
+    # Find the strongest correlation
+    strongest_pair = correlation_pairs.abs().idxmax()
+
+    print("\nStrongest correlation:")
+    print(f"Features: {strongest_pair}")
+    print(f"Correlation: {correlation_pairs.loc[strongest_pair]:.4f}")
+
+    # use groupby() to calculate the standard deviaton of every feature for each species.
+
+    # Modify the pairplot to display only length and petal width.
 if __name__ == "__main__":
     main()

@@ -82,6 +82,10 @@ def plot_correlation(df):
 def plot_pairplot(df):
     sns.pairplot(
             df,
+            vars=[
+                "petal length (cm)",
+                "petal width (cm)"
+                ],
             hue="species",
             diag_kind="hist",
             corner=True
@@ -137,6 +141,7 @@ def main():
 
     # Convert the matrix into feature pairs
     correlation_pairs = upper_triangle.stack()
+    strongest_pair = correlation_pairs.abs().idxmax()
 
     # Find the strongest correlation
     strongest_pair = correlation_pairs.abs().idxmax()
@@ -146,7 +151,12 @@ def main():
     print(f"Correlation: {correlation_pairs.loc[strongest_pair]:.4f}")
 
     # use groupby() to calculate the standard deviaton of every feature for each species.
+    print("\nStandard deviation grouped by species:")
+    print(df.groupby("species").std())
 
     # Modify the pairplot to display only length and petal width.
+    print("\nPairplot:")
+    plot_pairplot(df)
+
 if __name__ == "__main__":
     main()
